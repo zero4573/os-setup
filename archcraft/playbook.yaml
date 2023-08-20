@@ -152,13 +152,6 @@
             name:
               - calibre
 
-        - name: Set default browser to brave
-          ansible.builtin.lineinfile:
-            path: "/etc/environment"
-            search_string: "BROWSER="
-            line: 'BROWSER=brave'
-
-
         # Replace this once evolution becomes available on snap
         - name: Install flatpak for evolution
           community.general.pacman:
@@ -176,3 +169,40 @@
           community.general.flatpak:
             state: present
             name: com.unity.UnityHub
+
+        - name: Set default browser to brave
+          ansible.builtin.lineinfile:
+            path: "/etc/environment"
+            search_string: "BROWSER="
+            line: 'BROWSER=brave'
+
+        - name: Set default hyprland browser to brave
+          ansible.builtin.lineinfile:
+            path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
+			regexp: '^\$browser'
+            line: '$browser = brave'
+
+        - name: Set default editor to vim
+          ansible.builtin.lineinfile:
+            path: "/etc/environment"
+            search_string: "EDITOR="
+            line: 'EDITOR=vim'
+
+        - name: Set default hyprland editor to vscode
+          ansible.builtin.lineinfile:
+            path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
+			regexp: '^\$editor'
+            line: '$editor = code'
+
+        - name: Set custom configurations
+		  ansible.builtin.lineinfile:
+            path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
+			line: |
+			  #-- Custom -----------------------------------------------------
+			  exec-once=[workspace 1 silent] /var/lib/snapd/snap/bin/brave
+			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/discord
+			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/teams-for-linux
+			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/whatsdesk
+			  exec-once=[workspace 2 silent] /var/lib/flatpak/exports/bin/org.gnome.Evolution
+			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/1password
+
