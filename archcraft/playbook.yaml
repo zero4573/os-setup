@@ -25,9 +25,9 @@
 
     - name: Setup zshrc
       ansible.builtin.lineinfile:
-        path: "{{ ansible_env.HOME }}/.zshrc"
+        path: "{{ zshrc.stat.path }}"
         line: '. /opt/asdf-vm/asdf.sh'
-      when: zshrc.stat.isreg
+      when: zshrc.stat.exists and zshrc.stat.isreg
 
     # If you have a bashrc, then set it up
     - name: bashrc file stat
@@ -37,9 +37,9 @@
 
     - name: Setup bashrc
       ansible.builtin.lineinfile:
-        path: "{{ ansible_env.HOME }}/.bashrc"
+        path: "{{ bashrc.stat.path }}"
         line: '. /opt/asdf-vm/asdf.sh'
-      when: bashrc.stat.isreg
+      when: bashrc.stat.exists and bashrc.stat.isreg
 
     - name: Install asdf tool dependencies
       become: true
@@ -221,14 +221,14 @@
         path: "{{ sway.stat.path }}"
         regexp: 'set \$browser .*'
         line: 'set $browser brave'
-      when: sway.stat.isreg
+      when: sway.stat.exists and sway.stat.isreg
 
     - name: Set default sway editor to vscode
       ansible.builtin.lineinfile:
         path: "{{ sway.stat.path }}"
         regexp: 'set \$editor .*'
         line: 'set $editor code'
-      when: sway.stat.isreg
+      when: sway.stat.exists and sway.stat.isreg
 
     # hyprland configurations
     - name: hyprland.conf file stat
