@@ -8,6 +8,5 @@ To use this repo, you need to install one of the supported OS's, then ensure tha
 
 To run:
 ```sh
-ansible-galaxy install -r requirements.yml
 ansible-playbook -i ansible_hosts playbook.yaml
 ```

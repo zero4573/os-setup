@@ -1,6 +1,14 @@
 - name: Setup Archcraft installation
   hosts: all
   tasks:
+    - name: Update pacman cache
+      become: true
+      become_user: root
+      become_method: sudo
+      become_flags: -i
+      community.general.pacman:
+        update_cache: true
+
     - name: Install all packages via yay
       ansible.builtin.shell: /usr/bin/yay -S --noconfirm {{ item }}
       with_items:
@@ -33,8 +41,21 @@
         line: '. /opt/asdf-vm/asdf.sh'
       when: bashrc.stat.isreg
 
+    - name: Install asdf tool dependencies
+      become: true
+      become_user: root
+      become_method: sudo
+      become_flags: -i
+      community.general.pacman:
+        name: 
+          - base-devel
+          - unixodbc
+          - wxwidgets-gtk3
+        state: present
+
     - name: Install asdf tools
       ansible.builtin.shell: |
+        source /opt/asdf-vm/asdf.sh
         asdf plugin add {{ item.name }}
         asdf install {{ item.name }} {{ item.version }}
         asdf global {{ item.name }} {{ item.version }}
@@ -49,8 +70,8 @@
           global: 1.12.2-otp-24
 
         - name: erlang
-          version: 24.0.3
-          global: 24.0.3
+          version: 26.0.2
+          global: 26.0.2
 
         - name: golang
           version: 1.20.6
@@ -94,6 +115,13 @@
       become_method: sudo
       become_flags: -i
       block:
+        - name: Fix brightness up/down issues with i12 frameworks
+          ansible.builtin.blockinfile:
+            path: "/etc/modprobe.d/framework-als-blacklist.conf"
+            marker: "#-- ansible managed --------------------------------------------"
+            block: 'blacklist hid_sensor_hub'
+            create: true
+
         - name: Create snap symlink for classic support
           ansible.builtin.file:
             src: /var/lib/snapd/snap
@@ -124,6 +152,7 @@
           community.general.pacman:
             state: present
             name:
+              - yt-dlp
               - podman
               - podman-compose
 
@@ -157,7 +186,6 @@
           community.general.pacman:
             state: present
             name:
-              - xdg-desktop-portal-hyprland
               - flatpak
 
         - name: install evolution via flatpak
@@ -176,33 +204,61 @@
             search_string: "BROWSER="
             line: 'BROWSER=brave'
 
-        - name: Set default hyprland browser to brave
-          ansible.builtin.lineinfile:
-            path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
-			regexp: '^\$browser'
-            line: '$browser = brave'
-
         - name: Set default editor to vim
           ansible.builtin.lineinfile:
             path: "/etc/environment"
             search_string: "EDITOR="
             line: 'EDITOR=vim'
 
-        - name: Set default hyprland editor to vscode
-          ansible.builtin.lineinfile:
-            path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
-			regexp: '^\$editor'
-            line: '$editor = code'
+    # sway configurations
+    - name: sway config file stat
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.config/sway/config"
+      register: sway
 
-        - name: Set custom configurations
-		  ansible.builtin.lineinfile:
-            path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
-			line: |
-			  #-- Custom -----------------------------------------------------
-			  exec-once=[workspace 1 silent] /var/lib/snapd/snap/bin/brave
-			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/discord
-			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/teams-for-linux
-			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/whatsdesk
-			  exec-once=[workspace 2 silent] /var/lib/flatpak/exports/bin/org.gnome.Evolution
-			  exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/1password
+    - name: Set default sway browser to brave
+      ansible.builtin.lineinfile:
+        path: "{{ sway.stat.path }}"
+        regexp: 'set \$browser .*'
+        line: 'set $browser brave'
+      when: sway.stat.isreg
 
+    - name: Set default sway editor to vscode
+      ansible.builtin.lineinfile:
+        path: "{{ sway.stat.path }}"
+        regexp: 'set \$editor .*'
+        line: 'set $editor code'
+      when: sway.stat.isreg
+
+    # hyprland configurations
+    - name: hyprland.conf file stat
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
+      register: hypr
+
+    - name: Set default hyprland browser to brave
+      ansible.builtin.lineinfile:
+        path: "{{ hypr.stat.path }}"
+        regexp: '\$browser.*'
+        line: '$browser = brave'
+      when: hypr.stat.exists and hypr.stat.isreg
+
+    - name: Set default hyprland editor to vscode
+      ansible.builtin.lineinfile:
+        path: "{{ hypr.stat.path }}"
+        regexp: '\$editor.*'
+        line: '$editor = code'
+      when: hypr.stat.exists and hypr.stat.isreg
+
+    - name: Set custom configurations
+      ansible.builtin.blockinfile:
+        path: "{{ hypr.stat.path }}"
+        marker: "#-- ansible managed --------------------------------------------"
+        block: |
+          exec-once=[workspace 1 silent] /var/lib/snapd/snap/bin/brave
+          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/discord
+          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/teams-for-linux
+          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/whatsdesk
+          exec-once=[workspace 2 silent] /var/lib/flatpak/exports/bin/org.gnome.Evolution
+          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/1password
+      when: hypr.stat.exists and hypr.stat.isreg
