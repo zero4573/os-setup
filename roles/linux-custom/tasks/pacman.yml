@@ -1,0 +1,96 @@
+- name: Check if pacman is installed
+  shell: command -v pacman >/dev/null 2>&1
+  register: pacman_exists
+  ignore_errors: yes
+
+- name: pacman commands
+  when: pacman_exists.rc == 0
+  block:
+    - name: Install all packages via yay
+      ansible.builtin.shell: /usr/bin/yay -S --noconfirm {{ item }}
+      with_items:
+        - vi-vim-symlink
+        - snapd
+        - jetbrains-toolbox
+
+    - name: Create snap symlink for classic support
+      ansible.builtin.file:
+        src: /var/lib/snapd/snap
+        dest: /snap
+        owner: root
+        group: root
+        state: link
+
+    - name: Enable snapd.socket
+      ansible.builtin.systemd:
+        name: snapd.socket
+        enabled: true
+        state: started
+
+    - name: Enable snapd.apparmor
+      ansible.builtin.systemd:
+        name: snapd.apparmor
+        enabled: true
+        state: started
+
+    - name: pacman packages
+      community.general.pacman:
+        state: present
+        name:
+          - yt-dlp
+          - podman
+          - podman-compose
+
+    - name: Install all gui applications that don't require classic snap support for installation
+      community.general.snap:
+        name:
+          - whatsdesk
+          - brave
+          - discord
+          - dbeaver-ce
+          - remmina
+          - insomnia
+          - teams-for-linux
+          - 1password
+
+    - name: Install all gui applications that require classic snap support for installation
+      community.general.snap:
+        classic: true
+        name:
+          - sublime-merge
+          - code
+
+    - name: Install all gui applications that are in --edge
+      community.general.snap:
+        channel: edge
+        name:
+          - calibre
+
+    # Replace this once evolution becomes available on snap
+    - name: Install flatpak for evolution
+      community.general.pacman:
+        state: present
+        name:
+          - flatpak
+
+    - name: install evolution via flatpak
+      community.general.flatpak:
+        state: present
+        name: org.gnome.Evolution
+
+    - name: install unityhub via flatpak
+      community.general.flatpak:
+        state: present
+        name: com.unity.UnityHub
+
+    - name: Set default browser to brave
+      ansible.builtin.lineinfile:
+        path: "/etc/environment"
+        search_string: "BROWSER="
+        line: 'BROWSER=brave'
+
+    - name: Set default editor to vim
+      ansible.builtin.lineinfile:
+        path: "/etc/environment"
+        search_string: "EDITOR="
+        line: 'EDITOR=vim'

@@ -1,0 +1,7 @@
+- name: Setup Archcraft installation
+  hosts: all
+  roles: 
+    - linux-base
+    - linux-custom
+    - asdf
+    - archcraft

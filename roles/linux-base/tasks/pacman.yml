@@ -1,0 +1,21 @@
+- name: Check if pacman is installed
+  shell: command -v pacman >/dev/null 2>&1
+  register: pacman_exists
+  ignore_errors: yes
+
+- name: pacman commands
+  when: pacman_exists.rc == 0
+  block:
+    # TODO: Install yay as well, this role currently assumes yay is installed
+    - name: Check if yay is installed, fail if it doesnt
+      shell: command -v yay >/dev/null 2>&1
+      register: yay_exists
+      failed_when: yay_exists.rc != 0
+
+    - name: Update pacman cache
+      become: true
+      become_user: root
+      become_method: sudo
+      become_flags: -i
+      community.general.pacman:
+        update_cache: true

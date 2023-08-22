@@ -8,5 +8,5 @@ To use this repo, you need to install one of the supported OS's, then ensure tha
 
 To run:
 ```sh
-ansible-playbook -i ansible_hosts playbook.yaml
+ansible-playbook -i ansible_hosts site.yaml
 ```

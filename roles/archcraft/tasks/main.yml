@@ -1,0 +1,21 @@
+- name: Sudo commands
+  become: true
+  become_user: root
+  become_method: sudo
+  become_flags: -i
+  block:
+    - name: Fix brightness up/down issues with i12 frameworks
+      ansible.builtin.blockinfile:
+        path: "/etc/modprobe.d/framework-als-blacklist.conf"
+        marker: "#-- ansible managed --------------------------------------------"
+        block: 'blacklist hid_sensor_hub'
+        create: true
+
+    - name: Disable bluetooth by default
+      ansible.builtin.systemd:
+        name: bluetooth.service
+        enabled: false
+        state: stopped
+
+- import_tasks: hyprland.yml
+- import_tasks: sway.yml

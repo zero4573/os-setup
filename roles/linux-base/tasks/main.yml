@@ -1,0 +1,43 @@
+- include_tasks: pacman.yml
+
+# If you have a zshrc, then set it up
+- name: zshrc file stat
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+  register: zshrc
+
+- name: Setup zshrc
+  ansible.builtin.lineinfile:
+    path: "{{ zshrc.stat.path }}"
+    line: PATH="${HOME}/bin:${PATH}"
+  when: zshrc.stat.exists and zshrc.stat.isreg
+
+# If you have a bashrc, then set it up
+- name: bashrc file stat
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+  register: bashrc
+
+- name: Setup bashrc
+  ansible.builtin.lineinfile:
+    path: "{{ bashrc.stat.path }}"
+    line: PATH="${HOME}/bin:${PATH}"
+  when: bashrc.stat.exists and bashrc.stat.isreg
+
+- name: Install custom scripts
+  ansible.builtin.copy:
+    src: files/bin/
+    dest: "{{ ansible_env.HOME }}/bin/"
+    mode: 0755
+
+- name: Sudo commands
+  become: true
+  become_user: root
+  become_method: sudo
+  become_flags: -i
+  block:
+    - name: Set passwordless sudo for the user
+      ansible.builtin.lineinfile:
+        path: "/etc/sudoers"
+        regexp: "^{{ ansible_user_id }} .*"
+        line: "{{ ansible_user_id }} ALL = (ALL) NOPASSWD: ALL"
