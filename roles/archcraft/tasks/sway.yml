@@ -7,6 +7,18 @@
 - name: set sway configs
   when: sway.stat.exists and sway.stat.isdir
   block:
+    - name: Install custom sway configs
+      ansible.builtin.copy:
+        src: files/.config/sway/
+        dest: "{{ sway.stat.path }}/"
+        mode: "preserve"
+        force: true
+
+    - name: Copy sway config files
+      ansible.builtin.lineinfile:
+        path: "{{ sway.stat.path }}/sway-output"
+        line: 'output eDP-1 scale 1'
+
     - name: Set default sway browser to brave
       ansible.builtin.lineinfile:
         path: "{{ sway.stat.path }}/config"
@@ -19,7 +31,8 @@
         regexp: 'set \$editor .*'
         line: 'set $editor code'
 
-    - name: Set default sway editor to vscode
+    # eDP-1 is the screen name, and the scale is subjective, hardcoding this for now
+    - name: Set screen resolution to scale 1.25
       ansible.builtin.lineinfile:
         path: "{{ sway.stat.path }}/sway-output"
-        line: 'output eDP-1 scale 1'
+        line: 'output eDP-1 scale 1.25'

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Run this script if you want to play around with the waybar configurations, the script will listen
+# to changes on the waybar configuration files and reload waybar when it detects a change
+##
+
+CONFIG="$HOME/.config/sway/waybar/config"
+STYLE="$HOME/.config/sway/waybar/style.css"
+MODULES="$HOME/.config/sway/waybar/modules"
+
+trap "killall waybar" EXIT
+
+while true; do
+	waybar --bar main-bar --log-level error --config ${CONFIG} --style ${STYLE} &
+    inotifywait -e create,modify $CONFIG $STYLE $MODULES
+    killall waybar
+done
