@@ -1,20 +1,25 @@
 # sway configurations
 - name: sway config file stat
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.config/sway/config"
+    path: "{{ ansible_env.HOME }}/.config/sway"
   register: sway
   
 - name: set sway configs
-  when: sway.stat.exists and sway.stat.isreg
+  when: sway.stat.exists and sway.stat.isdir
   block:
     - name: Set default sway browser to brave
       ansible.builtin.lineinfile:
-        path: "{{ sway.stat.path }}"
+        path: "{{ sway.stat.path }}/config"
         regexp: 'set \$browser .*'
         line: 'set $browser brave'
 
     - name: Set default sway editor to vscode
       ansible.builtin.lineinfile:
-        path: "{{ sway.stat.path }}"
+        path: "{{ sway.stat.path }}/config"
         regexp: 'set \$editor .*'
         line: 'set $editor code'
+
+    - name: Set default sway editor to vscode
+      ansible.builtin.lineinfile:
+        path: "{{ sway.stat.path }}/sway-output"
+        line: 'output eDP-1 scale 1'

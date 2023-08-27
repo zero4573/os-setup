@@ -2,29 +2,27 @@
 # hyprland configurations
 - name: hyprland.conf file stat
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.config/hypr/hyprland.conf"
+    path: "{{ ansible_env.HOME }}/.config/hypr"
   register: hypr
 
 - name: set hyprland configs
-  when: hypr.stat.exists and hypr.stat.isreg
+  when: hypr.stat.exists and hypr.stat.isdir
   block:
     - name: Set default hyprland browser to brave
       ansible.builtin.lineinfile:
-        path: "{{ hypr.stat.path }}"
+        path: "{{ hypr.stat.path }}/hyprland.conf"
         regexp: '\$browser.*'
         line: '$browser = brave'
-      when: hypr.stat.exists and hypr.stat.isreg
 
     - name: Set default hyprland editor to vscode
       ansible.builtin.lineinfile:
-        path: "{{ hypr.stat.path }}"
+        path: "{{ hypr.stat.path }}/hyprland.conf"
         regexp: '\$editor.*'
         line: '$editor = code'
-      when: hypr.stat.exists and hypr.stat.isreg
 
     - name: Set custom configurations
       ansible.builtin.blockinfile:
-        path: "{{ hypr.stat.path }}"
+        path: "{{ hypr.stat.path }}/hyprland.conf"
         marker: "#-- ansible managed --------------------------------------------"
         block: |
           exec-once=[workspace 1 silent] /var/lib/snapd/snap/bin/brave
@@ -33,4 +31,3 @@
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/whatsdesk
           exec-once=[workspace 2 silent] /var/lib/flatpak/exports/bin/org.gnome.Evolution
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/1password
-      when: hypr.stat.exists and hypr.stat.isreg

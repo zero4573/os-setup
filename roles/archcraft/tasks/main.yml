@@ -4,6 +4,11 @@
   become_method: sudo
   become_flags: -i
   block:
+    - name: Install all packages via yay
+      ansible.builtin.shell: /usr/bin/yay -S --noconfirm {{ item }}
+      with_items:
+        - networkmanager-openvpn
+
     - name: Fix brightness up/down issues with i12 frameworks
       ansible.builtin.blockinfile:
         path: "/etc/modprobe.d/framework-als-blacklist.conf"

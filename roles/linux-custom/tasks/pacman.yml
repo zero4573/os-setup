@@ -12,6 +12,7 @@
         - vi-vim-symlink
         - snapd
         - jetbrains-toolbox
+        - rclone
 
     - name: Create snap symlink for classic support
       ansible.builtin.file:
