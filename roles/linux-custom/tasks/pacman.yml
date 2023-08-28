@@ -70,22 +70,19 @@
         name:
           - calibre
 
-    # Replace this once evolution becomes available on snap
-    - name: Install flatpak for evolution
+    # Replace this if/once snap packages become available for all apps here
+    - name: Install flatpak
       community.general.pacman:
         state: present
         name:
           - flatpak
 
-    - name: install evolution via flatpak
+    - name: install all flatpak apps
       community.general.flatpak:
         state: present
-        name: org.gnome.Evolution
-
-    - name: install unityhub via flatpak
-      community.general.flatpak:
-        state: present
-        name: com.unity.UnityHub
+        name:
+          - com.unity.UnityHub
+          - org.gnome.Evolution
 
     - name: Set default browser to brave
       ansible.builtin.lineinfile:
