@@ -4,9 +4,10 @@
 # to changes on the waybar configuration files and reload waybar when it detects a change
 ##
 
-CONFIG="$HOME/.config/sway/waybar/config"
-STYLE="$HOME/.config/sway/waybar/style.css"
-MODULES="$HOME/.config/sway/waybar/modules"
+WM='hypr'
+CONFIG="$HOME/.config/hypr/waybar/config"
+STYLE="$HOME/.config/hypr/waybar/style.css"
+MODULES="$HOME/.config/hypr/waybar/modules"
 
 trap "killall waybar" EXIT
 
