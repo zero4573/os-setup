@@ -7,12 +7,9 @@
   when: pacman_exists.rc == 0
   block:
     - name: Install all packages via yay
-      community.general.pacman:
-        state: present
-        executable: yay
-        extra_args: --builddir /var/cache/yay
-        name:
-          - asdf-vm
+      ansible.builtin.shell: /usr/bin/yay -S --noconfirm {{ item }}
+      with_items:
+        - asdf-vm
 
     # If you have a zshrc, then set it up
     - name: zshrc file stat

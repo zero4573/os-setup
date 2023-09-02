@@ -5,12 +5,9 @@
   become_flags: -i
   block:
     - name: Install all packages via yay
-      community.general.pacman:
-        state: present
-        executable: yay
-        extra_args: --builddir /var/cache/yay
-        name:
-          - networkmanager-openvpn
+      ansible.builtin.shell: /usr/bin/yay -S --noconfirm {{ item }}
+      with_items:
+        - networkmanager-openvpn
 
     - name: Fix brightness up/down issues with i12 frameworks
       ansible.builtin.blockinfile:

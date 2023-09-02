@@ -7,15 +7,12 @@
   when: pacman_exists.rc == 0
   block:
     - name: Install all packages via yay
-      community.general.pacman:
-        state: present
-        executable: yay
-        extra_args: --builddir /var/cache/yay
-        name:
-          - vi-vim-symlink
-          - snapd
-          - jetbrains-toolbox
-          - rclone
+      ansible.builtin.shell: /usr/bin/yay -S --noconfirm {{ item }}
+      with_items:
+        - vi-vim-symlink
+        - snapd
+        - jetbrains-toolbox
+        - rclone
 
     - name: Create snap symlink for classic support
       ansible.builtin.file:
