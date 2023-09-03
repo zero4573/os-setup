@@ -30,7 +30,16 @@
     - name: Set custom configurations
       ansible.builtin.blockinfile:
         path: "{{ hypr.stat.path }}/hyprland.conf"
-        marker: "#-- {mark} ansible managed --------------------------------------------"
+        marker: "#-- {mark} - ansible managed - device controls"
+        block: |
+          device:pixa3854:00-093a:0274-touchpad {
+              sensitivity = 0.60
+          }
+
+    - name: Set custom configurations
+      ansible.builtin.blockinfile:
+        path: "{{ hypr.stat.path }}/hyprland.conf"
+        marker: "#-- {mark} - ansible managed - startup apps"
         block: |
           exec-once=[workspace 1 silent] /var/lib/snapd/snap/bin/brave
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/discord
@@ -38,3 +47,4 @@
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/whatsdesk
           exec-once=[workspace 2 silent] /var/lib/flatpak/exports/bin/org.gnome.Evolution
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/1password
+          exec-once=[workspace 2 silent] /usr/bin/jetbrains-toolbox
