@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Modified from:
+# https://github.com/rahriver/rofi-noter/tree/master
+##
+
+TERMINAL=$(basename "$SHELL")
+VIEW="<your_fav_viewer>"
+EDITOR=vim
+THEME=""
+
+# <<------ Directories ------>> #
+directory="$HOME/Documents/Notes"
+
+# <<------ Options ------>> #
+declare -A actions
+actions["🔖 View Notes"]=$note_library
+actions["📑 Create Note"]=$template_library
+
+# <<------ Main ------>> #
+create_document() {
+  template="SimpleNote.md"
+  EXTENSION="md"
+  message="Note Created!"
+
+  cn_name=$(rofi -dmenu -p "Note name:" ${THEME:+-theme $THEME})
+
+  if [ -z "$cn_name" ]; then
+    return
+  fi
+
+  if [ -f "$directory/$cn_name.$EXTENSION" ]; then
+    if ! (echo -e "Yes\nNo" | rofi -dmenu -p "Note already exists. Overwrite?" ${THEME:+-theme $THEME} | grep -q "Yes"); then
+      return
+    fi
+  fi
+
+  mkdir -p $directory
+  touch "$directory/$cn_name.$EXTENSION"
+  "$TERMINAL" -c "$EDITOR '$directory/$cn_name.$EXTENSION'"
+  notify-send "$message"
+}
+
+edit_notes() {
+  document=$(rg --files --iglob "*.md" --iglob "*.wiki" --iglob "*.tex" $directory)
+  selected_document=$(echo "$document" | rofi -dmenu -i -p "📖 Open:" ${THEME:+-theme $THEME})
+  if [[ -n $selected_document ]]; then
+    "$TERMINAL" -c "$EDITOR '$selected_document'"
+  fi
+}
+
+main() {
+  selected_action=$(printf '%s\n' "${!actions[@]}" | rofi -dmenu -i -p "📂 Choose an action:" ${THEME:+-theme $THEME})
+  
+  if [ -z "$selected_action" ]; then
+    exit 0
+  fi
+
+  case $selected_action in
+    "📑 Create Note")
+      create_document
+      ;;
+    "🔖 View Notes")
+      edit_notes
+      ;;
+  esac
+}
+
+main

@@ -50,6 +50,7 @@
               - podman-compose
               - aardvark-dns
               - fprintd
+              - ripgrep
 
         - name: Install all gui applications that don't require classic snap support for installation
           community.general.snap:
@@ -64,6 +65,7 @@
               - 1password
               - thunderbird
               - gimp
+              - cw-sh
 
         - name: Install all gui applications that require classic snap support for installation
           community.general.snap:
@@ -77,6 +79,18 @@
             channel: edge
             name:
               - calibre
+
+        - name: Snap Packages - Setup Plugs
+          changed_when: false
+          shell: 'snap connect {{ item.app }}:{{ item.plug }}'
+          with_items:
+            - app: cw-sh
+              plug: dot-aws-config-credentials
+
+        - name: Create snap for cw
+          community.general.snap_alias:
+            name: cw-sh.cw
+            alias: cw
 
         # Replace this if/once snap packages become available for all apps here
         - name: Install flatpak
