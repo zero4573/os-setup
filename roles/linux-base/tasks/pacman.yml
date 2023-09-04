@@ -19,3 +19,10 @@
       become_flags: -i
       community.general.pacman:
         update_cache: true
+
+    - name: install essential packages
+      community.general.pacman:
+        state: present
+        name:
+          - cronie
+          - snapper

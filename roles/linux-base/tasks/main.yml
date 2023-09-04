@@ -24,11 +24,13 @@
     line: PATH="${HOME}/bin:${PATH}"
   when: bashrc.stat.exists and bashrc.stat.isreg
 
-- name: Install custom scripts
-  ansible.builtin.copy:
-    src: files/bin/
-    dest: "{{ ansible_env.HOME }}/bin/"
-    mode: 0755
+  # Uncomment if we have scripts in the files/bin...
+# - name: Install custom scripts
+#   register: btrfs_snap_script
+#   ansible.builtin.copy:
+#     src: files/bin/
+#     dest: "{{ ansible_env.HOME }}/bin/"
+#     mode: 0755
 
 - name: Sudo commands
   become: true
@@ -41,3 +43,19 @@
         path: "/etc/sudoers"
         regexp: "^{{ ansible_user_id }} .*"
         line: "{{ ansible_user_id }} ALL = (ALL) NOPASSWD: ALL"
+
+    - name: configure snapper
+      become: true
+      become_user: root
+      become_method: sudo
+      become_flags: -i
+      ansible.builtin.copy:
+        src: files/snapper/
+        dest: "/etc/snapper/configs/"
+        mode: 0660
+
+    - name: Enable cronie
+      ansible.builtin.systemd:
+        name: cronie.service
+        enabled: true
+        state: started
