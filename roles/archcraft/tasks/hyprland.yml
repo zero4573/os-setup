@@ -43,8 +43,9 @@
         block: |
           exec-once=[workspace 1 silent] /var/lib/snapd/snap/bin/brave
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/discord
-          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/teams-for-linux
+          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/teams-for-linux --minimized
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/whatsdesk
-          exec-once=[workspace 2 silent] /var/lib/flatpak/exports/bin/org.gnome.Evolution
-          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/1password
-          exec-once=[workspace 2 silent] /usr/bin/jetbrains-toolbox
+          exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/1password --silent
+          exec-once=[workspace 2 silent] /usr/bin/jetbrains-toolbox --minimize
+          exec-once=[workspace 3 silent] /var/lib/snapd/snap/bin/thunderbird
+
