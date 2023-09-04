@@ -48,6 +48,7 @@
               - yt-dlp
               - podman
               - podman-compose
+              - aardvark-dns
 
         - name: Install all gui applications that don't require classic snap support for installation
           community.general.snap:
@@ -60,6 +61,7 @@
               - insomnia
               - teams-for-linux
               - 1password
+              - thunderbird
 
         - name: Install all gui applications that require classic snap support for installation
           community.general.snap:
@@ -86,7 +88,6 @@
             state: present
             name:
               - com.unity.UnityHub
-              - org.gnome.Evolution
 
         - name: Set default browser to brave
           ansible.builtin.lineinfile:
