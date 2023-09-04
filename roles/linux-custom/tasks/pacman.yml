@@ -13,6 +13,7 @@
         - snapd
         - jetbrains-toolbox
         - rclone
+        - downgrade
 
     - name: run in sudo
       become: true
