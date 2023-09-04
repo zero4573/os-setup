@@ -4,7 +4,8 @@
 ##
 ## Script To Manage Brightness For Archcraft (in Wayland).
 
-iDIR="$HOME/.config/sway/mako/icons"
+WM='hypr'
+iDIR="$HOME/.config/$WM/mako/icons"
 
 # Get brightness
 get_backlight() {

@@ -51,6 +51,7 @@
               - aardvark-dns
               - fprintd
               - ripgrep
+              - cliphist
 
         - name: Install all gui applications that don't require classic snap support for installation
           community.general.snap:

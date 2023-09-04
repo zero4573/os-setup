@@ -27,6 +27,20 @@
         regexp: '^\$editor.*'
         line: '$editor = code'
 
+    - name: Set rofi_clipboard executable
+      ansible.builtin.lineinfile:
+        path: "{{ hypr.stat.path }}/hyprland.conf"
+        regexp: '^\$rofi_clipboard   ='
+        insertafter: '^\$rofi_screenshot  ='
+        line: '$rofi_clipboard   = ~/.config/hypr/scripts/rofi_clipboard'
+
+    - name: Set rofi_clipboard binding
+      ansible.builtin.lineinfile:
+        path: "{{ hypr.stat.path }}/hyprland.conf"
+        regexp: '^bind  = SUPER, V,'
+        insertafter: '^\# -- Rofi --'
+        line: 'bind  = SUPER, V,       exec, $rofi_clipboard'
+
     - name: Set custom configurations
       ansible.builtin.blockinfile:
         path: "{{ hypr.stat.path }}/hyprland.conf"
@@ -41,6 +55,11 @@
         path: "{{ hypr.stat.path }}/hyprland.conf"
         marker: "#-- {mark} - ansible managed - startup apps"
         block: |
+          # cliphist integration
+          exec-once = wl-paste --type text --watch cliphist store
+          exec-once = wl-paste --type image --watch cliphist store
+
+          # startup apps
           exec-once=[workspace 1 silent] /var/lib/snapd/snap/bin/brave
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/discord
           exec-once=[workspace 2 silent] /var/lib/snapd/snap/bin/teams-for-linux --minimized
