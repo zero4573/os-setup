@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2020-2023 Aditya Shakya <adi1090x@gmail.com>
+
+# Import Current Theme
+DIR="$HOME/.config/hypr"
+RASI="$DIR/rofi/clipboard.rasi"
+
+# Run
+cliphist list | rofi -dmenu -theme ${RASI} | cliphist decode | wl-copy
