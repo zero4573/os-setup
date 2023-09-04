@@ -49,6 +49,7 @@
               - podman
               - podman-compose
               - aardvark-dns
+              - fprintd
 
         - name: Install all gui applications that don't require classic snap support for installation
           community.general.snap:
@@ -62,6 +63,7 @@
               - teams-for-linux
               - 1password
               - thunderbird
+              - gimp
 
         - name: Install all gui applications that require classic snap support for installation
           community.general.snap:
