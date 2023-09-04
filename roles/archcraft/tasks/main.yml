@@ -22,5 +22,9 @@
         enabled: false
         state: stopped
 
+    - name: Prefer dark theme because its clearly the superior theme
+      ansible.builtin.shell: |
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+
 - import_tasks: hyprland.yml
 - import_tasks: sway.yml
