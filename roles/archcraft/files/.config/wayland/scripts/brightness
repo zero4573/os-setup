@@ -37,10 +37,10 @@ notify_user() {
 
 # Increase brightness
 inc_backlight() {
-	brightness=$(light)
-	if (( $(echo "$brightness == 0" | bc -l) )); then
-		light -S 1
-	elif (( $(echo "$brightness < 5" | bc -l) )); then
+	brightnessRaw=$(light -r)
+	if (( $(echo "$brightnessRaw == 0" | bc -l) )); then
+		light -rS 1
+	elif (( $(echo "$brightnessRaw == 1" | bc -l) )); then
 		light -S 5
 	else
 		light -A 5
@@ -51,10 +51,11 @@ inc_backlight() {
 # Decrease brightness
 dec_backlight() {
 	brightness=$(light)
-	if (( $(echo "$brightness == 1" | bc -l) )); then
-		light -S 0
+	brightnessRaw=$(light -r)
+	if (( $(echo "$brightnessRaw == 1" | bc -l) )); then
+		light -rS 0
 	elif (( $(echo "$brightness <= 5" | bc -l) )); then
-		light -S 1
+		light -rS 1
 	else
 		light -U 5
 	fi
