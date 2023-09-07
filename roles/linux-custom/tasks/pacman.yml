@@ -12,6 +12,8 @@
         - vi-vim-symlink
         - snapd
         - jetbrains-toolbox
+        - unityhub
+        - mono-msbuild
         - rclone
         - downgrade
 
@@ -63,7 +65,6 @@
               - dbeaver-ce
               - remmina
               - insomnia
-              - teams-for-linux
               - 1password
               - thunderbird
               - gimp
@@ -99,8 +100,9 @@
           community.general.flatpak:
             state: present
             name:
-              - com.unity.UnityHub
               - com.calibre_ebook.calibre
+              - us.zoom.Zoom
+              - com.github.IsmaelMartinez.teams_for_linux
 
         - name: Set default browser to brave
           ansible.builtin.lineinfile:
